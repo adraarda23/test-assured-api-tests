@@ -2,10 +2,9 @@ package com.ardakilinc.tasksapi.it;
 
 import com.ardakilinc.tasksapi.TasksApiApplication;
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.TestPropertySource;
@@ -19,18 +18,15 @@ public abstract class BaseApiIT {
     @LocalServerPort
     int port;
 
-    @BeforeAll
-    static void configureDefaults() {
-        RestAssured.requestSpecification = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON);
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    }
-
     @BeforeEach
-    void bindPort() {
+    void bindRestAssured() {
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = port;
         RestAssured.basePath = "/api";
+        RestAssured.requestSpecification = new RequestSpecBuilder()
+                .setContentType(ContentType.JSON)
+                .setAccept(ContentType.JSON)
+                .build();
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 }
