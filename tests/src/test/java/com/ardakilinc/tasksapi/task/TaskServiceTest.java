@@ -9,9 +9,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,5 +43,79 @@ class TaskServiceTest {
                 .isNull();
         assertThat(result).isSameAs(persisted);
         assertThat(result.getId()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("listAll() returns whatever the repository returns")
+    void listAll_delegatesToRepository() {
+        List<Task> stored = List.of(
+                new Task(1L, "a", false, null),
+                new Task(2L, "b", true, null));
+        when(repository.findAll()).thenReturn(stored);
+
+        assertThat(service.listAll()).isEqualTo(stored);
+    }
+
+    @Test
+    @DisplayName("findById() returns the task when present")
+    void findById_returnsTaskWhenPresent() {
+        Task task = new Task(7L, "found", false, null);
+        when(repository.findById(7L)).thenReturn(Optional.of(task));
+
+        assertThat(service.findById(7L)).contains(task);
+    }
+
+    @Test
+    @DisplayName("findById() returns empty when missing")
+    void findById_returnsEmptyWhenMissing() {
+        when(repository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThat(service.findById(99L)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("update() copies fields onto the existing task and saves it")
+    void update_copiesFieldsAndSaves() {
+        Task existing = new Task(5L, "old", false, LocalDate.of(2026, 1, 1));
+        Task incoming = new Task(null, "new", true, LocalDate.of(2027, 6, 6));
+        when(repository.findById(5L)).thenReturn(Optional.of(existing));
+        when(repository.save(existing)).thenReturn(existing);
+
+        Optional<Task> result = service.update(5L, incoming);
+
+        assertThat(result).isPresent();
+        assertThat(existing.getTitle()).isEqualTo("new");
+        assertThat(existing.isCompleted()).isTrue();
+        assertThat(existing.getDueDate()).isEqualTo(LocalDate.of(2027, 6, 6));
+        assertThat(existing.getId())
+                .as("update must not change the id")
+                .isEqualTo(5L);
+    }
+
+    @Test
+    @DisplayName("update() returns empty and does not save when target is missing")
+    void update_returnsEmptyWhenMissing() {
+        when(repository.findById(404L)).thenReturn(Optional.empty());
+
+        Optional<Task> result = service.update(404L, new Task(null, "x", false, null));
+
+        assertThat(result).isEmpty();
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("delete() returns true when repository removed something")
+    void delete_returnsTrueWhenRemoved() {
+        when(repository.deleteById(3L)).thenReturn(true);
+
+        assertThat(service.delete(3L)).isTrue();
+    }
+
+    @Test
+    @DisplayName("delete() returns false when nothing was removed")
+    void delete_returnsFalseWhenMissing() {
+        when(repository.deleteById(3L)).thenReturn(false);
+
+        assertThat(service.delete(3L)).isFalse();
     }
 }
