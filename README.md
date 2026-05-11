@@ -92,3 +92,10 @@ Every integration test validates the three things required by the assignment:
 - HTTP status code
 - response body content (JSON path matchers)
 - response time under an SLA threshold (`ResponseTimeSla.under()`, 2000 ms)
+
+## Presentation
+
+`docs/presentation.md` — Marp-compatible slide deck on AI-assisted software
+test engineering, prepared for the class presentation. Renders as plain
+markdown on GitHub; can be exported to PDF/HTML with
+[Marp CLI](https://github.com/marp-team/marp-cli) (`marp docs/presentation.md`).
