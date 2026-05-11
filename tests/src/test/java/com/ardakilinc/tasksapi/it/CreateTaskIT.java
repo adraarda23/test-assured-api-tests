@@ -1,6 +1,5 @@
 package com.ardakilinc.tasksapi.it;
 
-import com.ardakilinc.tasksapi.it.support.ResponseTimeSla;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
