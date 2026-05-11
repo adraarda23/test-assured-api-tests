@@ -1,12 +1,19 @@
 package com.ardakilinc.tasksapi.task;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
 public class Task {
 
     private Long id;
+
+    @NotBlank(message = "title must not be blank")
+    @Size(max = 200, message = "title must be at most 200 characters")
     private String title;
+
     private boolean completed;
     private LocalDate dueDate;
 
