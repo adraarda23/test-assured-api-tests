@@ -22,4 +22,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <modules>
+        <module>api</module>
+        <module>tests</module>
+    </modules>
+
 </project>
