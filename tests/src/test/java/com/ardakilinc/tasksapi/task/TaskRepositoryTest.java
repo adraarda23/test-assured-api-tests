@@ -29,8 +29,8 @@ class TaskRepositoryTest {
         Task first = repository.save(new Task(null, "first", false, null));
         Task second = repository.save(new Task(null, "second", false, null));
 
-        assertThat(first.getId()).isEqualTo(1L);
-        assertThat(second.getId()).isEqualTo(2L);
+        assertThat(first.id()).isEqualTo(1L);
+        assertThat(second.id()).isEqualTo(2L);
     }
 
     @Test
@@ -40,7 +40,7 @@ class TaskRepositoryTest {
 
         Task saved = repository.save(task);
 
-        assertThat(saved.getId()).isEqualTo(42L);
+        assertThat(saved.id()).isEqualTo(42L);
         assertThat(repository.findById(42L)).isPresent();
     }
 
@@ -49,14 +49,8 @@ class TaskRepositoryTest {
     void findById_returnsSaved() {
         Task saved = repository.save(new Task(null, "fetch-me", true, LocalDate.of(2026, 6, 6)));
 
-        assertThat(repository.findById(saved.getId()))
-                .isPresent()
-                .get()
-                .satisfies(t -> {
-                    assertThat(t.getTitle()).isEqualTo("fetch-me");
-                    assertThat(t.isCompleted()).isTrue();
-                    assertThat(t.getDueDate()).isEqualTo(LocalDate.of(2026, 6, 6));
-                });
+        assertThat(repository.findById(saved.id()))
+                .contains(new Task(saved.id(), "fetch-me", true, LocalDate.of(2026, 6, 6)));
     }
 
     @Test
@@ -70,9 +64,9 @@ class TaskRepositoryTest {
     void deleteById_removesEntry() {
         Task saved = repository.save(new Task(null, "delete-me", false, null));
 
-        assertThat(repository.deleteById(saved.getId())).isTrue();
-        assertThat(repository.findById(saved.getId())).isEmpty();
-        assertThat(repository.existsById(saved.getId())).isFalse();
+        assertThat(repository.deleteById(saved.id())).isTrue();
+        assertThat(repository.findById(saved.id())).isEmpty();
+        assertThat(repository.existsById(saved.id())).isFalse();
     }
 
     @Test
@@ -86,7 +80,7 @@ class TaskRepositoryTest {
     void existsById_reflectsState() {
         Task saved = repository.save(new Task(null, "check-me", false, null));
 
-        assertThat(repository.existsById(saved.getId())).isTrue();
-        assertThat(repository.existsById(saved.getId() + 1)).isFalse();
+        assertThat(repository.existsById(saved.id())).isTrue();
+        assertThat(repository.existsById(saved.id() + 1)).isFalse();
     }
 }

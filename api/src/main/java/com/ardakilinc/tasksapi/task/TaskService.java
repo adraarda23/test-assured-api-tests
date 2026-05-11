@@ -23,17 +23,12 @@ public class TaskService {
     }
 
     public Task create(Task task) {
-        task.setId(null);
-        return repository.save(task);
+        return repository.save(task.withId(null));
     }
 
     public Optional<Task> update(Long id, Task updated) {
-        return repository.findById(id).map(existing -> {
-            existing.setTitle(updated.getTitle());
-            existing.setCompleted(updated.isCompleted());
-            existing.setDueDate(updated.getDueDate());
-            return repository.save(existing);
-        });
+        return repository.findById(id)
+                .map(existing -> repository.save(updated.withId(existing.id())));
     }
 
     public boolean delete(Long id) {

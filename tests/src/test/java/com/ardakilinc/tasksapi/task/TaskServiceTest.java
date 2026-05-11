@@ -38,11 +38,11 @@ class TaskServiceTest {
 
         ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
         verify(repository).save(captor.capture());
-        assertThat(captor.getValue().getId())
+        assertThat(captor.getValue().id())
                 .as("service must not let the caller pick the id")
                 .isNull();
         assertThat(result).isSameAs(persisted);
-        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.id()).isEqualTo(1L);
     }
 
     @Test
@@ -74,22 +74,17 @@ class TaskServiceTest {
     }
 
     @Test
-    @DisplayName("update() copies fields onto the existing task and saves it")
-    void update_copiesFieldsAndSaves() {
+    @DisplayName("update() saves a replacement task with the existing id and the new fields")
+    void update_replacesAndSaves() {
         Task existing = new Task(5L, "old", false, LocalDate.of(2026, 1, 1));
         Task incoming = new Task(null, "new", true, LocalDate.of(2027, 6, 6));
+        Task expected = new Task(5L, "new", true, LocalDate.of(2027, 6, 6));
         when(repository.findById(5L)).thenReturn(Optional.of(existing));
-        when(repository.save(existing)).thenReturn(existing);
+        when(repository.save(expected)).thenReturn(expected);
 
         Optional<Task> result = service.update(5L, incoming);
 
-        assertThat(result).isPresent();
-        assertThat(existing.getTitle()).isEqualTo("new");
-        assertThat(existing.isCompleted()).isTrue();
-        assertThat(existing.getDueDate()).isEqualTo(LocalDate.of(2027, 6, 6));
-        assertThat(existing.getId())
-                .as("update must not change the id")
-                .isEqualTo(5L);
+        assertThat(result).contains(expected);
     }
 
     @Test

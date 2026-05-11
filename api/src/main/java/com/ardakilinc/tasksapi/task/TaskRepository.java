@@ -2,7 +2,6 @@ package com.ardakilinc.tasksapi.task;
 
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,7 +14,7 @@ public class TaskRepository {
     private final AtomicLong sequence = new AtomicLong(0);
 
     public List<Task> findAll() {
-        return new ArrayList<>(store.values());
+        return List.copyOf(store.values());
     }
 
     public Optional<Task> findById(Long id) {
@@ -23,11 +22,9 @@ public class TaskRepository {
     }
 
     public Task save(Task task) {
-        if (task.getId() == null) {
-            task.setId(sequence.incrementAndGet());
-        }
-        store.put(task.getId(), task);
-        return task;
+        Task toStore = task.id() == null ? task.withId(sequence.incrementAndGet()) : task;
+        store.put(toStore.id(), toStore);
+        return toStore;
     }
 
     public boolean deleteById(Long id) {

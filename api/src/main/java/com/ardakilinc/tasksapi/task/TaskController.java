@@ -40,7 +40,7 @@ public class TaskController {
     public ResponseEntity<Task> create(@Valid @RequestBody Task task) {
         Task created = service.create(task);
         return ResponseEntity
-                .created(URI.create("/api/tasks/" + created.getId()))
+                .created(URI.create("/api/tasks/" + created.id()))
                 .body(created);
     }
 
