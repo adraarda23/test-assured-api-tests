@@ -4,6 +4,8 @@ import com.ardakilinc.tasksapi.it.support.ResponseTimeSla;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -18,14 +20,12 @@ class CreateTaskIT extends BaseApiIT {
     @DisplayName("POST /tasks creates a task and returns 201 with Location header under SLA")
     void create_returnsCreated() {
         String title = "scenario-create-" + System.nanoTime();
-        String body = "{"
-                + "\"title\":\"" + title + "\","
-                + "\"completed\":false,"
-                + "\"dueDate\":\"2026-12-31\""
-                + "}";
 
         given()
-            .body(body)
+            .body(Map.of(
+                    "title", title,
+                    "completed", false,
+                    "dueDate", "2026-12-31"))
             .when()
                 .post("/tasks")
             .then()
@@ -43,7 +43,7 @@ class CreateTaskIT extends BaseApiIT {
     @DisplayName("POST /tasks with blank title returns 400 with field-level message")
     void create_blankTitleReturnsBadRequest() {
         given()
-            .body("{\"title\":\"\",\"completed\":false}")
+            .body(Map.of("title", "", "completed", false))
             .when()
                 .post("/tasks")
             .then()

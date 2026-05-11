@@ -4,6 +4,8 @@ import com.ardakilinc.tasksapi.it.support.ResponseTimeSla;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -13,7 +15,7 @@ class UpdateTaskIT extends BaseApiIT {
     @DisplayName("PUT /tasks/{id} updates an existing task and returns 200 under SLA")
     void update_returnsUpdatedTask() {
         Integer id = given()
-                .body("{\"title\":\"original-title\",\"completed\":false}")
+                .body(Map.of("title", "original-title", "completed", false))
             .when()
                 .post("/tasks")
             .then()
@@ -21,7 +23,10 @@ class UpdateTaskIT extends BaseApiIT {
                 .extract().path("id");
 
         given()
-            .body("{\"title\":\"updated-title\",\"completed\":true,\"dueDate\":\"2027-01-01\"}")
+            .body(Map.of(
+                    "title", "updated-title",
+                    "completed", true,
+                    "dueDate", "2027-01-01"))
             .when()
                 .put("/tasks/{id}", id)
             .then()
@@ -37,7 +42,7 @@ class UpdateTaskIT extends BaseApiIT {
     @DisplayName("PUT /tasks/{id} returns 404 for unknown id")
     void update_unknownIdReturnsNotFound() {
         given()
-            .body("{\"title\":\"whatever\",\"completed\":false}")
+            .body(Map.of("title", "whatever", "completed", false))
             .when()
                 .put("/tasks/{id}", 99_999_999L)
             .then()
@@ -49,7 +54,7 @@ class UpdateTaskIT extends BaseApiIT {
     @DisplayName("PUT /tasks/{id} with blank title returns 400")
     void update_blankTitleReturnsBadRequest() {
         Integer id = given()
-                .body("{\"title\":\"will-be-rejected-on-update\",\"completed\":false}")
+                .body(Map.of("title", "will-be-rejected-on-update", "completed", false))
             .when()
                 .post("/tasks")
             .then()
@@ -57,7 +62,7 @@ class UpdateTaskIT extends BaseApiIT {
                 .extract().path("id");
 
         given()
-            .body("{\"title\":\"\",\"completed\":false}")
+            .body(Map.of("title", "", "completed", false))
             .when()
                 .put("/tasks/{id}", id)
             .then()

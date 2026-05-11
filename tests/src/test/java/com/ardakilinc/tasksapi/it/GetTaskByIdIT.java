@@ -4,6 +4,8 @@ import com.ardakilinc.tasksapi.it.support.ResponseTimeSla;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
@@ -16,7 +18,10 @@ class GetTaskByIdIT extends BaseApiIT {
         String title = "scenario-get-by-id-" + System.nanoTime();
 
         Integer id = given()
-                .body("{\"title\":\"" + title + "\",\"completed\":false,\"dueDate\":\"2026-12-31\"}")
+                .body(Map.of(
+                        "title", title,
+                        "completed", false,
+                        "dueDate", "2026-12-31"))
             .when()
                 .post("/tasks")
             .then()

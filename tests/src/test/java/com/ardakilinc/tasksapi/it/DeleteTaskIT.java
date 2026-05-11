@@ -4,6 +4,8 @@ import com.ardakilinc.tasksapi.it.support.ResponseTimeSla;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static io.restassured.RestAssured.given;
 
 class DeleteTaskIT extends BaseApiIT {
@@ -12,7 +14,7 @@ class DeleteTaskIT extends BaseApiIT {
     @DisplayName("DELETE /tasks/{id} returns 204 and removes the task, under SLA")
     void delete_returnsNoContent() {
         Integer id = given()
-                .body("{\"title\":\"scenario-delete\",\"completed\":false}")
+                .body(Map.of("title", "scenario-delete", "completed", false))
             .when()
                 .post("/tasks")
             .then()

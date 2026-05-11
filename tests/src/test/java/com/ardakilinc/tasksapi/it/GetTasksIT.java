@@ -4,6 +4,8 @@ import com.ardakilinc.tasksapi.it.support.ResponseTimeSla;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -30,7 +32,7 @@ class GetTasksIT extends BaseApiIT {
         String uniqueTitle = "scenario-list-" + System.nanoTime();
 
         given()
-            .body("{\"title\":\"" + uniqueTitle + "\",\"completed\":false}")
+            .body(Map.of("title", uniqueTitle, "completed", false))
             .when()
                 .post("/tasks")
             .then()
